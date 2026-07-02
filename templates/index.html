@@ -5,163 +5,759 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Radio IsraProyets</title>
 <link rel="icon" href="/templates/Icono/favicon.ico">
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
-
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{
-    --primary:#6366f1;
-    --secondary:#ec4899;
-    --glass:rgba(255,255,255,0.15);
-    --text:#ffffff;
-    --dark:#0f172a;
-}
+/* ── Reset ───────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
 
-*{
-    box-sizing:border-box;
-    margin:0;
-    padding:0;
+/* ── Theme ────────────────────────────────────── */
+:root{
+    --bg:#0a0a0f;
+    --surface:#12121a;
+    --surface2:#1a1a26;
+    --border:#2a2a3a;
+    --text:#e8e8f0;
+    --text2:#8888a0;
+    --accent:#7c3aed;
+    --accent2:#a855f7;
+    --accent-glow:rgba(124,58,237,.3);
+    --green:#22c55e;
+    --red:#ef4444;
+    --radius:16px;
+    --radius-sm:10px;
 }
 
 body{
-    font-family:'Montserrat',sans-serif;
-    background:linear-gradient(135deg,var(--primary),var(--secondary));
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    min-height:100vh;
+    font-family:'Inter',system-ui,-apple-system,sans-serif;
+    background:var(--bg);
     color:var(--text);
-    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:100vh;
+    overflow-x:hidden;
 }
 
-.player{
-    backdrop-filter:blur(20px);
-    background:var(--glass);
-    border:1px solid rgba(255,255,255,0.2);
-    border-radius:24px;
-    padding:40px 30px;
-    width:100%;
-    max-width:420px;
-    text-align:center;
-    box-shadow:0 25px 50px rgba(0,0,0,0.3);
-    animation:fadeIn 0.8s ease;
+/* ── Background animation ─────────────────────── */
+.bg-glow{
+    position:fixed;inset:0;z-index:0;
+    overflow:hidden;pointer-events:none;
+}
+.bg-glow::before,.bg-glow::after{
+    content:'';position:absolute;
+    width:60vw;height:60vw;border-radius:50%;
+    filter:blur(120px);opacity:.12;
+    animation:drift 20s ease-in-out infinite;
+}
+.bg-glow::before{
+    background:var(--accent);top:-20%;left:-10%;
+    animation-delay:0s;
+}
+.bg-glow::after{
+    background:var(--accent2);bottom:-20%;right:-10%;
+    animation-delay:-10s;
+}
+@keyframes drift{
+    0%,100%{transform:translate(0,0) scale(1)}
+    33%{transform:translate(5%,5%) scale(1.1)}
+    66%{transform:translate(-3%,-3%) scale(.95)}
 }
 
-@keyframes fadeIn{
-    from{opacity:0;transform:translateY(20px)}
-    to{opacity:1;transform:translateY(0)}
+/* ── App container ────────────────────────────── */
+.app{
+    position:relative;z-index:1;
+    width:100%;max-width:520px;
+    padding:16px;
 }
 
-.logo{
-    width:70px;
-    margin-bottom:15px;
-    border-radius:50%;
-    box-shadow:0 8px 20px rgba(0,0,0,0.3);
+/* ── Glass card ───────────────────────────────── */
+.card{
+    background:rgba(18,18,26,.75);
+    backdrop-filter:blur(24px);
+    -webkit-backdrop-filter:blur(24px);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:28px 24px 24px;
+    box-shadow:0 8px 40px rgba(0,0,0,.5);
+    transition:border-color .3s;
 }
 
-h1{
-    font-size:22px;
-    font-weight:700;
-    margin-bottom:25px;
+/* ── Header ───────────────────────────────────── */
+.header{
+    display:flex;align-items:center;gap:14px;margin-bottom:24px;
+}
+.header img{
+    width:52px;height:52px;border-radius:50%;
+    object-fit:cover;
+    box-shadow:0 4px 16px rgba(0,0,0,.4);
+}
+.header-info{flex:1;min-width:0}
+.header-info h1{
+    font-size:18px;font-weight:700;
+    background:linear-gradient(135deg,var(--text),var(--accent2));
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    background-clip:text;
+}
+.header-info p{font-size:12px;color:var(--text2);margin-top:2px}
+.header-badge{
+    font-size:10px;font-weight:600;padding:4px 10px;
+    border-radius:20px;background:rgba(34,197,94,.15);color:var(--green);
+    border:1px solid rgba(34,197,94,.2);
 }
 
-label{
-    font-size:14px;
-    opacity:0.9;
+/* ── Visualizer ───────────────────────────────── */
+.visualizer{
+    width:100%;height:64px;border-radius:var(--radius-sm);
+    background:var(--surface);margin-bottom:20px;overflow:hidden;
+}
+.visualizer canvas{width:100%;height:100%;display:block}
+
+/* ── Now playing ──────────────────────────────── */
+.now-playing{
+    text-align:center;margin-bottom:24px;
+    min-height:60px;display:flex;flex-direction:column;justify-content:center;
+}
+.now-playing .title{
+    font-size:17px;font-weight:600;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.now-playing .artist{
+    font-size:13px;color:var(--text2);margin-top:4px;
 }
 
-select{
-    margin-top:10px;
-    width:100%;
-    padding:12px;
-    border-radius:12px;
-    border:none;
-    outline:none;
-    font-size:14px;
-    background:rgba(255,255,255,0.9);
-    transition:all 0.3s ease;
+/* ── Controls ─────────────────────────────────── */
+.controls{
+    display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:24px;
+}
+.controls button{
+    background:var(--surface2);border:1px solid var(--border);
+    color:var(--text);width:44px;height:44px;border-radius:50%;
+    cursor:pointer;display:flex;align-items:center;justify-content:center;
+    font-size:18px;transition:all .2s;
+}
+.controls button:hover{
+    background:var(--accent);border-color:var(--accent);
+    transform:scale(1.05);
+}
+.controls button:active{transform:scale(.95)}
+.controls .btn-play{
+    width:56px;height:56px;font-size:22px;
+    background:var(--accent);border-color:var(--accent);
+    box-shadow:0 4px 20px var(--accent-glow);
+}
+.controls .btn-play:hover{
+    box-shadow:0 4px 30px var(--accent-glow);
+    transform:scale(1.06);
 }
 
-select:hover{
-    transform:scale(1.02);
+/* ── Progress bar ─────────────────────────────── */
+.progress-container{
+    display:flex;align-items:center;gap:10px;margin-bottom:20px;
+}
+.progress-container span{
+    font-size:11px;color:var(--text2);font-variant-numeric:tabular-nums;
+    min-width:36px;
+}
+.progress-bar{
+    flex:1;height:4px;border-radius:4px;
+    background:var(--surface2);cursor:pointer;position:relative;
+}
+.progress-fill{
+    height:100%;border-radius:4px;
+    background:linear-gradient(90deg,var(--accent),var(--accent2));
+    width:0%;transition:width .1s linear;
+    position:relative;
+}
+.progress-fill::after{
+    content:'';position:absolute;right:-6px;top:-4px;
+    width:12px;height:12px;border-radius:50%;
+    background:var(--accent2);opacity:0;
+    transition:opacity .2s;
+}
+.progress-bar:hover .progress-fill::after{opacity:1}
+
+/* ── Volume ───────────────────────────────────── */
+.volume-row{
+    display:flex;align-items:center;gap:10px;margin-bottom:20px;
+}
+.volume-row .icon{font-size:16px;color:var(--text2);min-width:20px;text-align:center}
+.volume-bar{
+    flex:1;height:4px;border-radius:4px;
+    background:var(--surface2);cursor:pointer;position:relative;
+}
+.volume-fill{
+    height:100%;border-radius:4px;
+    background:var(--text2);width:70%;transition:width .1s;
 }
 
-.audio-wrapper{
-    margin-top:25px;
+/* ── Song list ────────────────────────────────── */
+.section-header{
+    display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;
 }
-
-audio{
-    width:100%;
-    border-radius:12px;
+.section-header h2{
+    font-size:13px;font-weight:600;text-transform:uppercase;
+    letter-spacing:.05em;color:var(--text2);
 }
+.section-header .count{
+    font-size:11px;color:var(--text2);background:var(--surface2);
+    padding:2px 10px;border-radius:12px;
+}
+.search-box{
+    width:100%;padding:10px 14px;border-radius:var(--radius-sm);
+    background:var(--surface);border:1px solid var(--border);
+    color:var(--text);font-size:13px;outline:none;margin-bottom:12px;
+    transition:border-color .2s;
+    font-family:inherit;
+}
+.search-box:focus{border-color:var(--accent)}
+.search-box::placeholder{color:var(--text2)}
 
-.status{
-    margin-top:15px;
+.song-list{
+    list-style:none;max-height:220px;overflow-y:auto;
+    scrollbar-width:thin;scrollbar-color:var(--border) transparent;
+    border-radius:var(--radius-sm);
+}
+.song-list::-webkit-scrollbar{width:4px}
+.song-list::-webkit-scrollbar-track{background:transparent}
+.song-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+
+.song-item{
+    display:flex;align-items:center;gap:10px;padding:8px 10px;
+    border-radius:8px;cursor:pointer;transition:all .15s;
     font-size:13px;
-    opacity:0.8;
 }
+.song-item:hover{background:var(--surface2)}
+.song-item.active{
+    background:rgba(124,58,237,.15);color:var(--accent2);
+}
+.song-item .num{
+    font-size:11px;color:var(--text2);min-width:20px;text-align:right;
+    font-variant-numeric:tabular-nums;
+}
+.song-item .info{flex:1;min-width:0}
+.song-item .name{
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500;
+}
+.song-item .meta{font-size:11px;color:var(--text2);margin-top:1px}
+.song-item .play-icon{opacity:0;transition:opacity .15s;font-size:12px}
+.song-item:hover .play-icon{opacity:.6}
+.song-item.active .play-icon{opacity:1;color:var(--accent2)}
 
+/* ── Download section ─────────────────────────── */
+.download-area{
+    margin-top:16px;padding-top:16px;
+    border-top:1px solid var(--border);
+}
+.download-row{
+    display:flex;gap:8px;
+}
+.download-row input{
+    flex:1;padding:10px 14px;border-radius:var(--radius-sm);
+    background:var(--surface);border:1px solid var(--border);
+    color:var(--text);font-size:13px;outline:none;
+    font-family:inherit;transition:border-color .2s;
+}
+.download-row input:focus{border-color:var(--accent)}
+.download-row input::placeholder{color:var(--text2)}
+.download-row button{
+    padding:10px 16px;border-radius:var(--radius-sm);
+    background:var(--accent);border:none;color:white;
+    font-weight:600;font-size:13px;cursor:pointer;
+    transition:all .2s;white-space:nowrap;font-family:inherit;
+}
+.download-row button:hover{background:var(--accent2)}
+.download-row button:disabled{opacity:.5;cursor:not-allowed}
+
+.download-tasks{list-style:none;margin-top:10px}
+.download-task{
+    display:flex;align-items:center;gap:10px;
+    padding:6px 0;font-size:12px;
+}
+.download-task .status{
+    width:8px;height:8px;border-radius:50%;flex-shrink:0;
+}
+.download-task .status.queued{background:var(--text2)}
+.download-task .status.downloading{background:var(--accent);animation:pulse 1s infinite}
+.download-task .status.converting{background:var(--green)}
+.download-task .status.done{background:var(--green)}
+.download-task .status.error{background:var(--red)}
+.download-task .name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.download-task .bar{
+    width:60px;height:3px;border-radius:3px;background:var(--surface2);overflow:hidden;
+}
+.download-task .bar-fill{
+    height:100%;background:var(--accent);border-radius:3px;transition:width .5s;
+}
+.download-task .pct{font-size:11px;color:var(--text2);min-width:32px;text-align:right}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* ── Footer ───────────────────────────────────── */
 .footer{
-    margin-top:25px;
-    font-size:12px;
-    opacity:0.6;
+    text-align:center;margin-top:20px;
+    font-size:11px;color:var(--text2);
 }
+.footer a{color:var(--accent2);text-decoration:none}
+.footer a:hover{text-decoration:underline}
 
+/* ── Toast ────────────────────────────────────── */
+.toast{
+    position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+    background:var(--surface2);border:1px solid var(--border);
+    color:var(--text);padding:10px 20px;border-radius:10px;
+    font-size:13px;opacity:0;transition:opacity .3s;z-index:100;
+    pointer-events:none;
+}
+.toast.show{opacity:1}
+
+/* ── Responsive ───────────────────────────────── */
 @media(max-width:480px){
-    .player{
-        padding:30px 20px;
-        border-radius:18px;
-    }
+    .app{padding:10px}
+    .card{padding:20px 16px;border-radius:12px}
+    .controls button{width:38px;height:38px;font-size:15px}
+    .controls .btn-play{width:48px;height:48px;font-size:18px}
+    .song-list{max-height:160px}
 }
 </style>
 </head>
-
 <body>
 
-<div class="player">
-    <img src="/templates/Png/Israel.png" alt="Logo Radio" class="logo">
-    <h1>Radio IsraProyets</h1>
+<div class="bg-glow"></div>
+<div class="app">
+<div class="card">
 
-    <label for="song-list">Selecciona una canción</label>
-    <select id="song-list">
-        {% for song in song_names %}
-        <option value="{{ song }}">{{ song }}</option>
-        {% endfor %}
-    </select>
-
-    <div class="audio-wrapper">
-        <audio id="audio-player" controls autoplay>
-            <source src="/stream" type="audio/mpeg">
-        </audio>
+    <!-- Header -->
+    <div class="header">
+        <img src="/templates/Png/Israel.png" alt="Logo">
+        <div class="header-info">
+            <h1>Radio IsraProyets</h1>
+            <p> reproduciendo en vivo</p>
+        </div>
+        <span class="header-badge" id="song-count">0</span>
     </div>
 
-    <div class="status" id="status">Reproduciendo en vivo</div>
+    <!-- Visualizer -->
+    <div class="visualizer">
+        <canvas id="visualizer"></canvas>
+    </div>
 
+    <!-- Now Playing -->
+    <div class="now-playing">
+        <div class="title" id="now-title">Presiona reproducir</div>
+        <div class="artist" id="now-artist">Radio IsraProyets</div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+        <button id="prev" title="Anterior">⏮</button>
+        <button class="btn-play" id="play" title="Reproducir/Pausar">▶</button>
+        <button id="next" title="Siguiente">⏭</button>
+    </div>
+
+    <!-- Progress -->
+    <div class="progress-container">
+        <span id="current-time">0:00</span>
+        <div class="progress-bar" id="progress-bar">
+            <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        <span id="total-time">0:00</span>
+    </div>
+
+    <!-- Volume -->
+    <div class="volume-row">
+        <span class="icon">🔊</span>
+        <div class="volume-bar" id="volume-bar">
+            <div class="volume-fill" id="volume-fill"></div>
+        </div>
+    </div>
+
+    <!-- Song list -->
+    <div class="section-header">
+        <h2>Lista de canciones</h2>
+        <span class="count" id="list-count">0</span>
+    </div>
+    <input class="search-box" id="search" type="text" placeholder="Buscar canción...">
+    <ul class="song-list" id="song-list"></ul>
+
+    <!-- Download -->
+    <div class="download-area">
+        <div class="download-row">
+            <input id="download-url" type="url" placeholder="URL de YouTube / SoundCloud...">
+            <button id="download-btn">Descargar</button>
+        </div>
+        <ul class="download-tasks" id="download-tasks"></ul>
+    </div>
+
+    <!-- Footer -->
     <div class="footer">
-        Powered by IsraProyets
+        Powered by <a href="https://github.com/IsraelDXPP" target="_blank">IsraProyets</a>
     </div>
 </div>
+</div>
+
+<div class="toast" id="toast"></div>
 
 <script>
-const select = document.getElementById('song-list')
-const audio = document.getElementById('audio-player')
-const statusText = document.getElementById('status')
+// ── State ──────────────────────────────────────────
+const state = {
+    songs: [],
+    filteredSongs: [],
+    currentIndex: -1,
+    isPlaying: false,
+    volume: 0.7,
+};
 
-select.addEventListener('change', () => {
-    const song = encodeURIComponent(select.value)
-    audio.src = `/stream?song=${song}`
-    audio.load()
-    audio.play()
-    statusText.textContent = `Reproduciendo: ${select.value}`
-})
+const audio = new Audio();
 
-audio.addEventListener('play', () => {
-    statusText.textContent = `Reproduciendo: ${select.value || "En vivo"}`
-})
+// ── DOM refs ───────────────────────────────────────
+const $ = id => document.getElementById(id);
+const visualizerCanvas = $('visualizer');
+const ctx = visualizerCanvas.getContext('2d');
+const songList = $('song-list');
+const searchInput = $('search');
+const nowTitle = $('now-title');
+const currentTimeEl = $('current-time');
+const totalTimeEl = $('total-time');
+const progressFill = $('progress-fill');
+const progressBar = $('progress-bar');
+const volumeFill = $('volume-fill');
+const volumeBar = $('volume-bar');
+const downloadTasks = $('download-tasks');
+
+// ── Toast ──────────────────────────────────────────
+function toast(msg) {
+    const el = $('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(el._hide);
+    el._hide = setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+// ── Load songs ─────────────────────────────────────
+async function loadSongs() {
+    try {
+        const res = await fetch('/api/songs');
+        state.songs = await res.json();
+        state.filteredSongs = [...state.songs];
+        renderSongList();
+        $('song-count').textContent = state.songs.length;
+        const firstSong = state.songs[0]?.name || 'Radio IsraProyets';
+        nowTitle.textContent = state.songs.length ? firstSong : 'No hay canciones';
+    } catch { toast('Error al cargar canciones'); }
+}
+
+// ── Render song list ───────────────────────────────
+function renderSongList() {
+    const q = searchInput.value.toLowerCase();
+    state.filteredSongs = q
+        ? state.songs.filter(s => s.name.toLowerCase().includes(q))
+        : [...state.songs];
+
+    songList.innerHTML = state.filteredSongs.map((s, i) =>
+        `<li class="song-item${state.currentIndex >= 0 && state.songs[state.currentIndex]?.id === s.id ? ' active' : ''}"
+             data-index="${i}" data-id="${s.id}">
+            <span class="num">${i + 1}</span>
+            <div class="info">
+                <div class="name">${escHtml(s.name)}</div>
+                <div class="meta">${(s.size / 1024 / 1024).toFixed(1)} MB</div>
+            </div>
+            <span class="play-icon">▶</span>
+        </li>`
+    ).join('');
+    $('list-count').textContent = state.filteredSongs.length;
+}
+
+function escHtml(s) {
+    const d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
+}
+
+// ── Play song ──────────────────────────────────────
+function playSong(index) {
+    const songs = state.filteredSongs;
+    if (index < 0 || index >= songs.length) return;
+    const song = songs[index];
+    const realIndex = state.songs.findIndex(s => s.id === song.id);
+    if (realIndex < 0) return;
+
+    state.currentIndex = realIndex;
+    const realSong = state.songs[realIndex];
+    audio.src = `/stream/${realSong.id}`;
+    audio.volume = state.volume;
+    audio.play().catch(() => {});
+    state.isPlaying = true;
+    $('play').textContent = '⏸';
+    nowTitle.textContent = realSong.name;
+    renderSongList();
+}
+
+// ── Visualizer ─────────────────────────────────────
+let analyserNode = null;
+let audioCtx = null;
+let sourceNode = null;
+let animId = null;
+
+function setupVisualizer() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (!sourceNode) sourceNode = audioCtx.createMediaElementSource(audio);
+    if (!analyserNode) {
+        analyserNode = audioCtx.createAnalyser();
+        analyserNode.fftSize = 128;
+        sourceNode.connect(analyserNode);
+        analyserNode.connect(audioCtx.destination);
+    }
+}
+
+let visualizerRunning = false;
+function startVisualizer() {
+    if (visualizerRunning) return;
+    visualizerRunning = true;
+    const data = new Uint8Array(analyserNode.frequencyBinCount);
+    const w = visualizerCanvas.clientWidth;
+    const h = visualizerCanvas.clientHeight;
+    visualizerCanvas.width = w * 2;
+    visualizerCanvas.height = h * 2;
+    ctx.scale(2, 2);
+
+    function draw() {
+        animId = requestAnimationFrame(draw);
+        analyserNode.getByteFrequencyData(data);
+        ctx.clearRect(0, 0, w, h);
+
+        const barW = w / data.length * 2.5;
+        const gap = w / data.length * 0.5;
+
+        for (let i = 0; i < data.length; i++) {
+            const pct = data[i] / 255;
+            const barH = pct * h * 0.9;
+            const x = i * (barW + gap) + gap / 2;
+            const y = h - barH;
+
+            const gradient = ctx.createLinearGradient(x, y, x, h);
+            gradient.addColorStop(0, '#a855f7');
+            gradient.addColorStop(1, '#7c3aed');
+            ctx.fillStyle = gradient;
+
+            ctx.beginPath();
+            ctx.roundRect(x, y, barW, barH, [2, 2, 0, 0]);
+            ctx.fill();
+        }
+    }
+    draw();
+}
+
+function stopVisualizer() {
+    visualizerRunning = false;
+    if (animId) cancelAnimationFrame(animId);
+    animId = null;
+    ctx.clearRect(0, 0, visualizerCanvas.width, visualizerCanvas.height);
+}
+
+// ── Audio events ───────────────────────────────────
+audio.addEventListener('loadedmetadata', () => {
+    totalTimeEl.textContent = formatTime(audio.duration);
+});
+
+audio.addEventListener('timeupdate', () => {
+    if (!audio.duration) return;
+    const pct = (audio.currentTime / audio.duration) * 100;
+    progressFill.style.width = pct + '%';
+    currentTimeEl.textContent = formatTime(audio.currentTime);
+});
+
+audio.addEventListener('ended', () => {
+    nextSong();
+});
+
+audio.addEventListener('play', async () => {
+    state.isPlaying = true;
+    $('play').textContent = '⏸';
+    if (!audioCtx) {
+        try { setupVisualizer(); } catch {}
+    }
+    if (analyserNode) startVisualizer();
+});
 
 audio.addEventListener('pause', () => {
-    statusText.textContent = "Pausado"
-})
-</script>
+    state.isPlaying = false;
+    $('play').textContent = '▶';
+    stopVisualizer();
+});
 
+function formatTime(s) {
+    if (!s || isNaN(s)) return '0:00';
+    const m = Math.floor(s / 60);
+    const sec = Math.floor(s % 60);
+    return `${m}:${sec.toString().padStart(2, '0')}`;
+}
+
+// ── Controls ───────────────────────────────────────
+$('play').addEventListener('click', () => {
+    if (state.currentIndex < 0 && state.songs.length) {
+        playSong(0);
+        return;
+    }
+    if (state.isPlaying) {
+        audio.pause();
+    } else {
+        audio.play().catch(() => {});
+    }
+});
+
+$('next').addEventListener('click', nextSong);
+$('prev').addEventListener('click', prevSong);
+
+function nextSong() {
+    if (!state.songs.length) return;
+    let i = (state.currentIndex + 1) % state.songs.length;
+    const filteredIdx = state.filteredSongs.findIndex(s => s.id === state.songs[i].id);
+    playSong(filteredIdx >= 0 ? filteredIdx : 0);
+}
+
+function prevSong() {
+    if (!state.songs.length) return;
+    let i = (state.currentIndex - 1 + state.songs.length) % state.songs.length;
+    const filteredIdx = state.filteredSongs.findIndex(s => s.id === state.songs[i].id);
+    playSong(filteredIdx >= 0 ? filteredIdx : 0);
+}
+
+// ── Progress bar click ─────────────────────────────
+progressBar.addEventListener('click', e => {
+    if (!audio.duration) return;
+    const rect = progressBar.getBoundingClientRect();
+    const pct = (e.clientX - rect.left) / rect.width;
+    audio.currentTime = pct * audio.duration;
+});
+
+// ── Volume ─────────────────────────────────────────
+volumeBar.addEventListener('click', e => {
+    const rect = volumeBar.getBoundingClientRect();
+    state.volume = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    audio.volume = state.volume;
+    volumeFill.style.width = (state.volume * 100) + '%';
+    $('volume-bar').parentElement.querySelector('.icon').textContent =
+        state.volume === 0 ? '🔇' : state.volume < 0.5 ? '🔉' : '🔊';
+});
+
+// ── Song list click ────────────────────────────────
+songList.addEventListener('click', e => {
+    const item = e.target.closest('.song-item');
+    if (!item) return;
+    const index = parseInt(item.dataset.index);
+    playSong(index);
+});
+
+// ── Search ─────────────────────────────────────────
+searchInput.addEventListener('input', renderSongList);
+
+// ── Keyboard shortcuts ─────────────────────────────
+document.addEventListener('keydown', e => {
+    if (e.target.tagName === 'INPUT') return;
+    if (e.code === 'Space') { e.preventDefault(); $('play').click(); }
+    if (e.code === 'ArrowRight') nextSong();
+    if (e.code === 'ArrowLeft') prevSong();
+});
+
+// ── Download ───────────────────────────────────────
+const DOWNLOAD_POLL_INTERVAL = 2000;
+let downloadPollers = {};
+
+$('download-btn').addEventListener('click', startDownload);
+$('download-url').addEventListener('keydown', e => {
+    if (e.key === 'Enter') startDownload();
+});
+
+async function startDownload() {
+    const url = $('download-url').value.trim();
+    if (!url) return toast('Ingresa una URL');
+    if (!url.startsWith('http://') && !url.startsWith('https://'))
+        return toast('URL inválida');
+
+    $('download-btn').disabled = true;
+    $('download-btn').textContent = '...';
+
+    try {
+        const res = await fetch('/api/download', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({url}),
+        });
+        if (!res.ok) {
+            const err = await res.json();
+            return toast(err.error || 'Error');
+        }
+        const data = await res.json();
+        $('download-url').value = '';
+        toast('Descarga iniciada');
+        pollDownload(data.task_id);
+    } catch { toast('Error de conexión'); }
+    finally {
+        $('download-btn').disabled = false;
+        $('download-btn').textContent = 'Descargar';
+    }
+}
+
+function pollDownload(taskId) {
+    const li = document.createElement('li');
+    li.className = 'download-task';
+    li.id = `dl-${taskId}`;
+    li.innerHTML = `
+        <span class="status queued" id="dl-status-${taskId}"></span>
+        <span class="name" id="dl-name-${taskId}">Descargando...</span>
+        <div class="bar"><div class="bar-fill" id="dl-bar-${taskId}" style="width:0%"></div></div>
+        <span class="pct" id="dl-pct-${taskId}">0%</span>
+    `;
+    downloadTasks.prepend(li);
+
+    downloadPollers[taskId] = setInterval(async () => {
+        try {
+            const res = await fetch(`/api/download/${taskId}`);
+            if (!res.ok) { stopPoll(taskId); return; }
+            const task = await res.json();
+
+            const statusEl = document.getElementById(`dl-status-${taskId}`);
+            const nameEl = document.getElementById(`dl-name-${taskId}`);
+            const barEl = document.getElementById(`dl-bar-${taskId}`);
+            const pctEl = document.getElementById(`dl-pct-${taskId}`);
+            if (!statusEl) { stopPoll(taskId); return; }
+
+            statusEl.className = `status ${task.status}`;
+            const pct = Math.round((task.progress || 0) * 100);
+            if (barEl) barEl.style.width = pct + '%';
+            if (pctEl) pctEl.textContent = pct + '%';
+
+            if (task.title && nameEl) {
+                nameEl.textContent = task.title;
+            } else if (task.status === 'downloading' && nameEl) {
+                nameEl.textContent = `Descargando... ${pct}%`;
+            }
+
+            if (task.status === 'done') {
+                if (nameEl) nameEl.textContent = task.title || 'Completado';
+                if (pctEl) pctEl.textContent = '100%';
+                stopPoll(taskId);
+                toast('Descarga completada');
+                loadSongs();
+            } else if (task.status === 'error') {
+                if (nameEl) nameEl.textContent = task.error || 'Error';
+                stopPoll(taskId);
+                toast('Error en la descarga');
+            }
+        } catch { stopPoll(taskId); }
+    }, DOWNLOAD_POLL_INTERVAL);
+}
+
+function stopPoll(taskId) {
+    clearInterval(downloadPollers[taskId]);
+    delete downloadPollers[taskId];
+}
+
+// ── Init ───────────────────────────────────────────
+loadSongs();
+
+// Set initial volume
+volumeFill.style.width = (state.volume * 100) + '%';
+</script>
 </body>
 </html>
