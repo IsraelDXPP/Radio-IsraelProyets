@@ -8,6 +8,7 @@ import hashlib
 import logging
 import threading
 import subprocess
+import shutil
 from pathlib import Path
 from functools import wraps
 from urllib.parse import unquote
@@ -15,7 +16,7 @@ from urllib.parse import unquote
 import yt_dlp
 from flask import (
     Flask, Response, render_template, jsonify, request,
-    send_file, abort, redirect, url_for, session
+    send_file, abort, send_from_directory
 )
 from werkzeug.utils import secure_filename
 
@@ -23,7 +24,8 @@ from werkzeug.utils import secure_filename
 BASE_DIR = Path(__file__).resolve().parent
 MUSIC_DIR = BASE_DIR / "Music"
 DOWNLOADS_DIR = BASE_DIR / "Downloads"
-MAX_FILE_SIZE = 200 * 1024 * 1024  # 200 MB
+STATIC_DIR = BASE_DIR / "static"
+MAX_FILE_SIZE = 200 * 1024 * 1024
 ALLOWED_EXTENSIONS = {".mp3", ".wav", ".ogg", ".flac", ".m4a", ".aac", ".wma"}
 SECRET_KEY = os.getenv("SECRET_KEY", hashlib.sha256(os.urandom(32)).hexdigest())
 HOST = os.getenv("RADIO_HOST", "127.0.0.1")
@@ -47,10 +49,10 @@ log = logging.getLogger("radio")
 app = Flask(__name__)
 app.secret_key = SECRET_KEY
 
-# ── Rate limiter (simple token bucket per IP) ──────────────────────────
+# ── Rate limiter ───────────────────────────────────────────────────────
 _rate_buckets: dict[str, list[float]] = {}
-_RATE_LIMIT = 60  # requests
-_RATE_WINDOW = 60  # seconds
+_RATE_LIMIT = 60
+_RATE_WINDOW = 60
 
 
 def rate_limit(f):
@@ -67,7 +69,7 @@ def rate_limit(f):
     return wrapper
 
 
-# ── Security helpers ───────────────────────────────────────────────────
+# ── Security headers ───────────────────────────────────────────────────
 _SECURITY_HEADERS = {
     "X-Content-Type-Options": "nosniff",
     "X-Frame-Options": "DENY",
@@ -116,6 +118,12 @@ def safe_song_path(filename: str) -> Path | None:
     if path.stat().st_size > MAX_FILE_SIZE:
         return None
     return path
+
+
+# ── Static files (serve from /static/) ─────────────────────────────────
+@app.route("/static/<path:filename>")
+def static_files(filename):
+    return send_from_directory(STATIC_DIR, filename)
 
 
 # ── Music scanning ─────────────────────────────────────────────────────
@@ -180,11 +188,9 @@ def _run_download(task_id: str, url: str) -> None:
             info = ydl.extract_info(url, download=True)
             title = info.get("title", "unknown")
 
-        # Move the resulting mp3 to Music dir
         for f in out_dir.iterdir():
             if f.suffix.lower() == ".mp3":
                 dest = MUSIC_DIR / f.name
-                # Avoid name collisions
                 counter = 1
                 while dest.exists():
                     stem = f.stem + f"_{counter}"
@@ -192,8 +198,6 @@ def _run_download(task_id: str, url: str) -> None:
                     counter += 1
                 f.rename(dest)
 
-        # Cleanup
-        import shutil
         shutil.rmtree(out_dir, ignore_errors=True)
 
         with _download_lock:
@@ -243,7 +247,6 @@ def stream_song(song_id):
 @require_auth
 @rate_limit
 def stream():
-    """Radio stream — shuffle all songs."""
     songs = scan_music()
     if not songs:
         return Response("No songs available", status=404, mimetype="text/plain")
@@ -293,7 +296,6 @@ def search_songs():
     return jsonify(results)
 
 
-# ── Download routes ────────────────────────────────────────────────────
 @app.route("/api/download", methods=["POST"])
 @require_auth
 @rate_limit
@@ -306,7 +308,6 @@ def download_song():
     if not url.startswith(("http://", "https://")):
         return jsonify({"error": "Invalid URL"}), 400
 
-    # Block dangerous patterns
     blocked = re.search(r"[;&|`$()\[\]{}]", url)
     if blocked:
         return jsonify({"error": "Invalid URL"}), 400
@@ -315,7 +316,6 @@ def download_song():
     task_id = hashlib.sha256(f"{url}{time.time()}{ip}".encode()).hexdigest()[:16]
 
     with _download_lock:
-        # Count active downloads for this IP
         ip_count = sum(
             1 for t in _download_tasks.values()
             if t.get("ip") == ip and t["status"] in ("downloading", "converting")
@@ -361,13 +361,13 @@ def cancel_download(task_id):
     return jsonify({"ok": True})
 
 
-# ── Health ─────────────────────────────────────────────────────────────
 @app.route("/api/health")
 def health():
     songs = scan_music()
     return jsonify({
         "status": "ok",
         "songs": len(songs),
+        "song_count": len(songs),
         "downloading": sum(
             1 for t in _download_tasks.values()
             if t["status"] in ("downloading", "converting", "queued")

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Radio IsraProyets</title>
-<link rel="icon" href="/templates/Icono/favicon.ico">
+<link rel="icon" href="/static/Icono/favicon.ico">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 /* ── Reset ───────────────────────────────────── */
@@ -12,20 +12,45 @@
 html,body{height:100%}
 
 /* ── Theme ────────────────────────────────────── */
-:root{
+[data-theme="dark"]{
     --bg:#0a0a0f;
     --surface:#12121a;
     --surface2:#1a1a26;
+    --surface3:#22223a;
     --border:#2a2a3a;
     --text:#e8e8f0;
     --text2:#8888a0;
+    --text3:#55557a;
     --accent:#7c3aed;
     --accent2:#a855f7;
     --accent-glow:rgba(124,58,237,.3);
     --green:#22c55e;
     --red:#ef4444;
-    --radius:16px;
-    --radius-sm:10px;
+    --yellow:#eab308;
+    --logo-border:rgba(255,255,255,.15);
+    --card-bg:rgba(18,18,26,.75);
+    --shadow:rgba(0,0,0,.5);
+    --glow-opacity:.12;
+}
+[data-theme="light"]{
+    --bg:#f1f5f9;
+    --surface:#ffffff;
+    --surface2:#e2e8f0;
+    --surface3:#cbd5e1;
+    --border:#cbd5e1;
+    --text:#0f172a;
+    --text2:#475569;
+    --text3:#94a3b8;
+    --accent:#7c3aed;
+    --accent2:#a855f7;
+    --accent-glow:rgba(124,58,237,.15);
+    --green:#16a34a;
+    --red:#dc2626;
+    --yellow:#ca8a04;
+    --logo-border:rgba(0,0,0,.1);
+    --card-bg:rgba(255,255,255,.8);
+    --shadow:rgba(0,0,0,.1);
+    --glow-opacity:.06;
 }
 
 body{
@@ -37,9 +62,10 @@ body{
     justify-content:center;
     min-height:100vh;
     overflow-x:hidden;
+    transition:background .4s,color .4s;
 }
 
-/* ── Background animation ─────────────────────── */
+/* ── Background glow ──────────────────────────── */
 .bg-glow{
     position:fixed;inset:0;z-index:0;
     overflow:hidden;pointer-events:none;
@@ -47,15 +73,16 @@ body{
 .bg-glow::before,.bg-glow::after{
     content:'';position:absolute;
     width:60vw;height:60vw;border-radius:50%;
-    filter:blur(120px);opacity:.12;
+    filter:blur(120px);opacity:var(--glow-opacity);
     animation:drift 20s ease-in-out infinite;
+    transition:background .6s;
 }
 .bg-glow::before{
-    background:var(--accent);top:-20%;left:-10%;
+    background:var(--glow-color1,#7c3aed);top:-20%;left:-10%;
     animation-delay:0s;
 }
 .bg-glow::after{
-    background:var(--accent2);bottom:-20%;right:-10%;
+    background:var(--glow-color2,#a855f7);bottom:-20%;right:-10%;
     animation-delay:-10s;
 }
 @keyframes drift{
@@ -65,32 +92,29 @@ body{
 }
 
 /* ── App container ────────────────────────────── */
-.app{
-    position:relative;z-index:1;
-    width:100%;max-width:520px;
-    padding:16px;
-}
+.app{position:relative;z-index:1;width:100%;max-width:520px;padding:16px}
 
 /* ── Glass card ───────────────────────────────── */
 .card{
-    background:rgba(18,18,26,.75);
+    background:var(--card-bg);
     backdrop-filter:blur(24px);
     -webkit-backdrop-filter:blur(24px);
     border:1px solid var(--border);
-    border-radius:var(--radius);
+    border-radius:16px;
     padding:28px 24px 24px;
-    box-shadow:0 8px 40px rgba(0,0,0,.5);
-    transition:border-color .3s;
+    box-shadow:0 8px 40px var(--shadow);
+    transition:background .4s,border-color .4s,box-shadow .4s;
 }
 
 /* ── Header ───────────────────────────────────── */
 .header{
-    display:flex;align-items:center;gap:14px;margin-bottom:24px;
+    display:flex;align-items:center;gap:14px;margin-bottom:20px;
 }
 .header img{
     width:52px;height:52px;border-radius:50%;
     object-fit:cover;
-    box-shadow:0 4px 16px rgba(0,0,0,.4);
+    border:2px solid var(--logo-border);
+    box-shadow:0 4px 16px rgba(0,0,0,.3);
 }
 .header-info{flex:1;min-width:0}
 .header-info h1{
@@ -100,23 +124,58 @@ body{
     background-clip:text;
 }
 .header-info p{font-size:12px;color:var(--text2);margin-top:2px}
-.header-badge{
-    font-size:10px;font-weight:600;padding:4px 10px;
-    border-radius:20px;background:rgba(34,197,94,.15);color:var(--green);
-    border:1px solid rgba(34,197,94,.2);
+.header-actions{display:flex;gap:6px}
+.header-actions button{
+    width:34px;height:34px;border-radius:8px;
+    background:var(--surface2);border:1px solid var(--border);
+    color:var(--text2);font-size:15px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    transition:all .2s;
 }
+.header-actions button:hover{background:var(--surface3);color:var(--text)}
+
+/* ── Theme colors popover ─────────────────────── */
+.color-popover{
+    position:absolute;top:50px;right:0;z-index:50;
+    background:var(--surface);border:1px solid var(--border);
+    border-radius:12px;padding:14px;width:220px;
+    box-shadow:0 12px 40px rgba(0,0,0,.4);
+    display:none;
+}
+.color-popover.show{display:block}
+.color-popover label{
+    display:block;font-size:11px;color:var(--text2);margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em;
+}
+.color-popover .color-row{display:flex;gap:8px;margin-bottom:10px;align-items:center}
+.color-popover input[type="color"]{
+    width:40px;height:34px;border:1px solid var(--border);border-radius:6px;
+    background:var(--surface2);cursor:pointer;padding:2px;
+}
+.color-popover input[type="text"]{
+    flex:1;padding:6px 8px;border-radius:6px;border:1px solid var(--border);
+    background:var(--surface2);color:var(--text);font-size:11px;font-family:monospace;
+}
+.color-popover .presets{
+    display:flex;flex-wrap:wrap;gap:6px;
+}
+.color-popover .presets button{
+    width:28px;height:28px;border-radius:6px;border:2px solid transparent;
+    cursor:pointer;transition:all .15s;
+}
+.color-popover .presets button:hover{border-color:var(--text)}
+.color-popover .presets button.active{border-color:var(--accent2)}
 
 /* ── Visualizer ───────────────────────────────── */
 .visualizer{
-    width:100%;height:64px;border-radius:var(--radius-sm);
-    background:var(--surface);margin-bottom:20px;overflow:hidden;
+    width:100%;height:64px;border-radius:10px;
+    background:var(--surface);margin-bottom:16px;overflow:hidden;
 }
 .visualizer canvas{width:100%;height:100%;display:block}
 
 /* ── Now playing ──────────────────────────────── */
 .now-playing{
-    text-align:center;margin-bottom:24px;
-    min-height:60px;display:flex;flex-direction:column;justify-content:center;
+    text-align:center;margin-bottom:20px;
+    min-height:52px;display:flex;flex-direction:column;justify-content:center;
 }
 .now-playing .title{
     font-size:17px;font-weight:600;
@@ -128,7 +187,7 @@ body{
 
 /* ── Controls ─────────────────────────────────── */
 .controls{
-    display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:24px;
+    display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:20px;
 }
 .controls button{
     background:var(--surface2);border:1px solid var(--border);
@@ -151,9 +210,9 @@ body{
     transform:scale(1.06);
 }
 
-/* ── Progress bar ─────────────────────────────── */
+/* ── Progress ─────────────────────────────────── */
 .progress-container{
-    display:flex;align-items:center;gap:10px;margin-bottom:20px;
+    display:flex;align-items:center;gap:10px;margin-bottom:16px;
 }
 .progress-container span{
     font-size:11px;color:var(--text2);font-variant-numeric:tabular-nums;
@@ -166,8 +225,7 @@ body{
 .progress-fill{
     height:100%;border-radius:4px;
     background:linear-gradient(90deg,var(--accent),var(--accent2));
-    width:0%;transition:width .1s linear;
-    position:relative;
+    width:0%;transition:width .1s linear;position:relative;
 }
 .progress-fill::after{
     content:'';position:absolute;right:-6px;top:-4px;
@@ -177,19 +235,50 @@ body{
 }
 .progress-bar:hover .progress-fill::after{opacity:1}
 
-/* ── Volume ───────────────────────────────────── */
+/* ── Volume slider ────────────────────────────── */
 .volume-row{
-    display:flex;align-items:center;gap:10px;margin-bottom:20px;
+    display:flex;align-items:center;gap:10px;margin-bottom:16px;
 }
-.volume-row .icon{font-size:16px;color:var(--text2);min-width:20px;text-align:center}
-.volume-bar{
+.volume-row .vol-icon{
+    font-size:16px;color:var(--text2);min-width:20px;text-align:center;
+    cursor:pointer;user-select:none;
+}
+.volume-row input[type="range"]{
+    -webkit-appearance:none;appearance:none;
     flex:1;height:4px;border-radius:4px;
-    background:var(--surface2);cursor:pointer;position:relative;
+    background:var(--surface2);outline:none;cursor:pointer;
 }
-.volume-fill{
-    height:100%;border-radius:4px;
-    background:var(--text2);width:70%;transition:width .1s;
+.volume-row input[type="range"]::-webkit-slider-thumb{
+    -webkit-appearance:none;appearance:none;
+    width:14px;height:14px;border-radius:50%;
+    background:var(--accent2);cursor:pointer;
+    border:2px solid var(--surface);box-shadow:0 2px 6px rgba(0,0,0,.3);
+    transition:transform .15s;
 }
+.volume-row input[type="range"]::-webkit-slider-thumb:hover{transform:scale(1.2)}
+.volume-row input[type="range"]::-moz-range-thumb{
+    width:14px;height:14px;border-radius:50%;
+    background:var(--accent2);cursor:pointer;
+    border:2px solid var(--surface);box-shadow:0 2px 6px rgba(0,0,0,.3);
+}
+.volume-row .vol-pct{
+    font-size:11px;color:var(--text2);min-width:32px;text-align:right;
+    font-variant-numeric:tabular-nums;
+}
+
+/* ── Audio mode selector ──────────────────────── */
+.mode-row{
+    display:flex;align-items:center;gap:8px;margin-bottom:16px;
+}
+.mode-row label{font-size:12px;color:var(--text2);font-weight:500}
+.mode-select{
+    flex:1;padding:6px 10px;border-radius:8px;
+    background:var(--surface);border:1px solid var(--border);
+    color:var(--text);font-size:12px;outline:none;cursor:pointer;
+    font-family:inherit;transition:border-color .2s;
+}
+.mode-select:focus{border-color:var(--accent)}
+.mode-select option{background:var(--surface);color:var(--text)}
 
 /* ── Song list ────────────────────────────────── */
 .section-header{
@@ -200,15 +289,15 @@ body{
     letter-spacing:.05em;color:var(--text2);
 }
 .section-header .count{
-    font-size:11px;color:var(--text2);background:var(--surface2);
+    font-size:11px;font-weight:600;color:var(--accent2);background:rgba(124,58,237,.12);
     padding:2px 10px;border-radius:12px;
+    font-variant-numeric:tabular-nums;
 }
 .search-box{
-    width:100%;padding:10px 14px;border-radius:var(--radius-sm);
+    width:100%;padding:10px 14px;border-radius:10px;
     background:var(--surface);border:1px solid var(--border);
     color:var(--text);font-size:13px;outline:none;margin-bottom:12px;
-    transition:border-color .2s;
-    font-family:inherit;
+    transition:border-color .2s;font-family:inherit;
 }
 .search-box:focus{border-color:var(--accent)}
 .search-box::placeholder{color:var(--text2)}
@@ -216,7 +305,7 @@ body{
 .song-list{
     list-style:none;max-height:220px;overflow-y:auto;
     scrollbar-width:thin;scrollbar-color:var(--border) transparent;
-    border-radius:var(--radius-sm);
+    border-radius:10px;
 }
 .song-list::-webkit-scrollbar{width:4px}
 .song-list::-webkit-scrollbar-track{background:transparent}
@@ -232,28 +321,26 @@ body{
     background:rgba(124,58,237,.15);color:var(--accent2);
 }
 .song-item .num{
-    font-size:11px;color:var(--text2);min-width:20px;text-align:right;
+    font-size:11px;color:var(--text3);min-width:20px;text-align:right;
     font-variant-numeric:tabular-nums;
 }
 .song-item .info{flex:1;min-width:0}
 .song-item .name{
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500;
 }
-.song-item .meta{font-size:11px;color:var(--text2);margin-top:1px}
+.song-item .meta{font-size:11px;color:var(--text3);margin-top:1px}
 .song-item .play-icon{opacity:0;transition:opacity .15s;font-size:12px}
 .song-item:hover .play-icon{opacity:.6}
 .song-item.active .play-icon{opacity:1;color:var(--accent2)}
+.song-list-empty{
+    text-align:center;padding:24px 0;font-size:13px;color:var(--text3);
+}
 
 /* ── Download section ─────────────────────────── */
-.download-area{
-    margin-top:16px;padding-top:16px;
-    border-top:1px solid var(--border);
-}
-.download-row{
-    display:flex;gap:8px;
-}
+.download-area{margin-top:16px;padding-top:16px;border-top:1px solid var(--border)}
+.download-row{display:flex;gap:8px}
 .download-row input{
-    flex:1;padding:10px 14px;border-radius:var(--radius-sm);
+    flex:1;padding:10px 14px;border-radius:10px;
     background:var(--surface);border:1px solid var(--border);
     color:var(--text);font-size:13px;outline:none;
     font-family:inherit;transition:border-color .2s;
@@ -261,7 +348,7 @@ body{
 .download-row input:focus{border-color:var(--accent)}
 .download-row input::placeholder{color:var(--text2)}
 .download-row button{
-    padding:10px 16px;border-radius:var(--radius-sm);
+    padding:10px 16px;border-radius:10px;
     background:var(--accent);border:none;color:white;
     font-weight:600;font-size:13px;cursor:pointer;
     transition:all .2s;white-space:nowrap;font-family:inherit;
@@ -274,14 +361,14 @@ body{
     display:flex;align-items:center;gap:10px;
     padding:6px 0;font-size:12px;
 }
-.download-task .status{
+.download-task .dot{
     width:8px;height:8px;border-radius:50%;flex-shrink:0;
 }
-.download-task .status.queued{background:var(--text2)}
-.download-task .status.downloading{background:var(--accent);animation:pulse 1s infinite}
-.download-task .status.converting{background:var(--green)}
-.download-task .status.done{background:var(--green)}
-.download-task .status.error{background:var(--red)}
+.download-task .dot.queued{background:var(--text3)}
+.download-task .dot.downloading{background:var(--accent);animation:pulse 1s infinite}
+.download-task .dot.converting{background:var(--yellow)}
+.download-task .dot.done{background:var(--green)}
+.download-task .dot.error{background:var(--red)}
 .download-task .name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .download-task .bar{
     width:60px;height:3px;border-radius:3px;background:var(--surface2);overflow:hidden;
@@ -289,24 +376,25 @@ body{
 .download-task .bar-fill{
     height:100%;background:var(--accent);border-radius:3px;transition:width .5s;
 }
-.download-task .pct{font-size:11px;color:var(--text2);min-width:32px;text-align:right}
+.download-task .pct{font-size:11px;color:var(--text2);min-width:32px;text-align:right;font-variant-numeric:tabular-nums}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 
 /* ── Footer ───────────────────────────────────── */
 .footer{
     text-align:center;margin-top:20px;
-    font-size:11px;color:var(--text2);
+    font-size:11px;color:var(--text3);line-height:1.6;
 }
 .footer a{color:var(--accent2);text-decoration:none}
 .footer a:hover{text-decoration:underline}
+.footer .sep{padding:0 6px;color:var(--border)}
 
 /* ── Toast ────────────────────────────────────── */
 .toast{
     position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
-    background:var(--surface2);border:1px solid var(--border);
+    background:var(--surface);border:1px solid var(--border);
     color:var(--text);padding:10px 20px;border-radius:10px;
     font-size:13px;opacity:0;transition:opacity .3s;z-index:100;
-    pointer-events:none;
+    pointer-events:none;white-space:nowrap;
 }
 .toast.show{opacity:1}
 
@@ -322,18 +410,34 @@ body{
 </head>
 <body>
 
-<div class="bg-glow"></div>
+<div class="bg-glow" id="bgGlow"></div>
 <div class="app">
-<div class="card">
+<div class="card" style="position:relative">
 
     <!-- Header -->
     <div class="header">
-        <img src="/templates/Png/Israel.png" alt="Logo">
+        <img src="/static/Png/Israel.png" alt="Logo" id="logo-img">
         <div class="header-info">
             <h1>Radio IsraProyets</h1>
-            <p> reproduciendo en vivo</p>
+            <p id="song-count-label">0 canciones</p>
         </div>
-        <span class="header-badge" id="song-count">0</span>
+        <div class="header-actions" style="position:relative">
+            <button id="theme-btn" title="Modo claro/oscuro">🌙</button>
+            <button id="color-btn" title="Personalizar colores">🎨</button>
+            <div class="color-popover" id="colorPopover">
+                <div class="color-row">
+                    <label>Color 1</label>
+                    <input type="color" id="color1" value="#7c3aed">
+                    <input type="text" id="color1text" value="#7c3aed">
+                </div>
+                <div class="color-row">
+                    <label>Color 2</label>
+                    <input type="color" id="color2" value="#a855f7">
+                    <input type="text" id="color2text" value="#a855f7">
+                </div>
+                <div class="presets" id="colorPresets"></div>
+            </div>
+        </div>
     </div>
 
     <!-- Visualizer -->
@@ -349,9 +453,9 @@ body{
 
     <!-- Controls -->
     <div class="controls">
-        <button id="prev" title="Anterior">⏮</button>
-        <button class="btn-play" id="play" title="Reproducir/Pausar">▶</button>
-        <button id="next" title="Siguiente">⏭</button>
+        <button id="prev" title="Anterior (←)">⏮</button>
+        <button class="btn-play" id="play" title="Reproducir/Pausar (Space)">▶</button>
+        <button id="next" title="Siguiente (→)">⏭</button>
     </div>
 
     <!-- Progress -->
@@ -365,10 +469,19 @@ body{
 
     <!-- Volume -->
     <div class="volume-row">
-        <span class="icon">🔊</span>
-        <div class="volume-bar" id="volume-bar">
-            <div class="volume-fill" id="volume-fill"></div>
-        </div>
+        <span class="vol-icon" id="vol-icon" title="Silenciar">🔊</span>
+        <input type="range" id="volume-slider" min="0" max="100" value="70">
+        <span class="vol-pct" id="vol-pct">70%</span>
+    </div>
+
+    <!-- Audio Mode -->
+    <div class="mode-row">
+        <label>Modo audio</label>
+        <select class="mode-select" id="audio-mode">
+            <option value="stereo">Estéreo</option>
+            <option value="mono">Mono</option>
+            <option value="wide">Wide / Dolby Atmos</option>
+        </select>
     </div>
 
     <!-- Song list -->
@@ -377,7 +490,9 @@ body{
         <span class="count" id="list-count">0</span>
     </div>
     <input class="search-box" id="search" type="text" placeholder="Buscar canción...">
-    <ul class="song-list" id="song-list"></ul>
+    <div id="song-list-container">
+        <ul class="song-list" id="song-list"></ul>
+    </div>
 
     <!-- Download -->
     <div class="download-area">
@@ -391,6 +506,10 @@ body{
     <!-- Footer -->
     <div class="footer">
         Powered by <a href="https://github.com/IsraelDXPP" target="_blank">IsraProyets</a>
+        <span class="sep">·</span>
+        <a href="https://github.com/IsraelDXPP/Radio-IsraelProyets/blob/main/LICENSE" target="_blank">GPL-3.0</a>
+        <span class="sep">·</span>
+        <a href="https://github.com/IsraelDXPP/Radio-IsraelProyets" target="_blank">GitHub</a>
     </div>
 </div>
 </div>
@@ -405,12 +524,18 @@ const state = {
     currentIndex: -1,
     isPlaying: false,
     volume: 0.7,
+    theme: localStorage.getItem('radio-theme') || 'dark',
+    color1: localStorage.getItem('radio-color1') || '#7c3aed',
+    color2: localStorage.getItem('radio-color2') || '#a855f7',
+    audioMode: localStorage.getItem('radio-audio-mode') || 'stereo',
 };
 
 const audio = new Audio();
+audio.crossOrigin = 'anonymous';
 
 // ── DOM refs ───────────────────────────────────────
 const $ = id => document.getElementById(id);
+const $$ = sel => document.querySelector(sel);
 const visualizerCanvas = $('visualizer');
 const ctx = visualizerCanvas.getContext('2d');
 const songList = $('song-list');
@@ -420,9 +545,93 @@ const currentTimeEl = $('current-time');
 const totalTimeEl = $('total-time');
 const progressFill = $('progress-fill');
 const progressBar = $('progress-bar');
-const volumeFill = $('volume-fill');
-const volumeBar = $('volume-bar');
+const volumeSlider = $('volume-slider');
+const volPct = $('vol-pct');
+const volIcon = $('vol-icon');
 const downloadTasks = $('download-tasks');
+const listCount = $('list-count');
+const songCountLabel = $('song-count-label');
+
+// ── Theme ──────────────────────────────────────────
+function applyTheme(theme) {
+    state.theme = theme;
+    document.documentElement.setAttribute('data-theme', theme);
+    $('theme-btn').textContent = theme === 'dark' ? '🌙' : '☀️';
+    localStorage.setItem('radio-theme', theme);
+}
+
+$('theme-btn').addEventListener('click', () => {
+    applyTheme(state.theme === 'dark' ? 'light' : 'dark');
+});
+applyTheme(state.theme);
+
+// ── Colors ─────────────────────────────────────────
+const PRESETS = [
+    ['#7c3aed','#a855f7'], ['#ec4899','#f43f5e'], ['#06b6d4','#3b82f6'],
+    ['#22c55e','#10b981'], ['#f59e0b','#ef4444'], ['#8b5cf6','#ec4899'],
+    ['#0ea5e9','#a855f7'], ['#10b981','#06b6d4'], ['#ffffff','#e2e8f0'],
+];
+
+function applyColors(c1, c2) {
+    state.color1 = c1; state.color2 = c2;
+    document.documentElement.style.setProperty('--glow-color1', c1);
+    document.documentElement.style.setProperty('--glow-color2', c2);
+    localStorage.setItem('radio-color1', c1);
+    localStorage.setItem('radio-color2', c2);
+}
+
+function renderColorPresets() {
+    const el = $('colorPresets');
+    el.innerHTML = PRESETS.map(([c1, c2], i) =>
+        `<button style="background:linear-gradient(135deg,${c1},${c2})"
+                 data-c1="${c1}" data-c2="${c2}"
+                 class="${c1 === state.color1 && c2 === state.color2 ? 'active' : ''}"></button>`
+    ).join('');
+    el.querySelectorAll('button').forEach(b => {
+        b.addEventListener('click', () => {
+            applyColors(b.dataset.c1, b.dataset.c2);
+            $('color1').value = b.dataset.c1;
+            $('color1text').value = b.dataset.c1;
+            $('color2').value = b.dataset.c2;
+            $('color2text').value = b.dataset.c2;
+            renderColorPresets();
+        });
+    });
+}
+
+$('color1').addEventListener('input', () => {
+    $('color1text').value = $('color1').value;
+    applyColors($('color1').value, state.color2);
+    renderColorPresets();
+});
+$('color2').addEventListener('input', () => {
+    $('color2text').value = $('color2').value;
+    applyColors(state.color1, $('color2').value);
+    renderColorPresets();
+});
+$('color1text').addEventListener('change', () => {
+    $('color1').value = $('color1text').value;
+    applyColors($('color1text').value, state.color2);
+    renderColorPresets();
+});
+$('color2text').addEventListener('change', () => {
+    $('color2').value = $('color2text').value;
+    applyColors(state.color1, $('color2text').value);
+    renderColorPresets();
+});
+
+$('color-btn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    $('colorPopover').classList.toggle('show');
+});
+document.addEventListener('click', () => $('colorPopover').classList.remove('show'));
+
+applyColors(state.color1, state.color2);
+$('color1').value = state.color1;
+$('color1text').value = state.color1;
+$('color2').value = state.color2;
+$('color2text').value = state.color2;
+renderColorPresets();
 
 // ── Toast ──────────────────────────────────────────
 function toast(msg) {
@@ -439,11 +648,18 @@ async function loadSongs() {
         const res = await fetch('/api/songs');
         state.songs = await res.json();
         state.filteredSongs = [...state.songs];
+        updateCounts();
         renderSongList();
-        $('song-count').textContent = state.songs.length;
         const firstSong = state.songs[0]?.name || 'Radio IsraProyets';
         nowTitle.textContent = state.songs.length ? firstSong : 'No hay canciones';
     } catch { toast('Error al cargar canciones'); }
+}
+
+function updateCounts() {
+    const total = state.songs.length;
+    const shown = state.filteredSongs.length;
+    listCount.textContent = total;
+    songCountLabel.textContent = `${total} canción${total !== 1 ? 'es' : ''}`;
 }
 
 // ── Render song list ───────────────────────────────
@@ -453,18 +669,24 @@ function renderSongList() {
         ? state.songs.filter(s => s.name.toLowerCase().includes(q))
         : [...state.songs];
 
+    if (!state.filteredSongs.length) {
+        songList.innerHTML = `<li class="song-list-empty">${q ? 'Sin resultados' : 'No hay canciones'}</li>`;
+        updateCounts();
+        return;
+    }
+
     songList.innerHTML = state.filteredSongs.map((s, i) =>
         `<li class="song-item${state.currentIndex >= 0 && state.songs[state.currentIndex]?.id === s.id ? ' active' : ''}"
              data-index="${i}" data-id="${s.id}">
             <span class="num">${i + 1}</span>
             <div class="info">
                 <div class="name">${escHtml(s.name)}</div>
-                <div class="meta">${(s.size / 1024 / 1024).toFixed(1)} MB</div>
+                <div class="meta">${(s.size / 1024 / 1024).toFixed(1)} MB · ${s.ext.slice(1)}</div>
             </div>
             <span class="play-icon">▶</span>
         </li>`
     ).join('');
-    $('list-count').textContent = state.filteredSongs.length;
+    updateCounts();
 }
 
 function escHtml(s) {
@@ -501,17 +723,21 @@ let animId = null;
 function setupVisualizer() {
     if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     if (!sourceNode) sourceNode = audioCtx.createMediaElementSource(audio);
-    if (!analyserNode) {
-        analyserNode = audioCtx.createAnalyser();
-        analyserNode.fftSize = 128;
-        sourceNode.connect(analyserNode);
-        analyserNode.connect(audioCtx.destination);
-    }
+}
+
+function initAnalyser() {
+    if (analyserNode) return;
+    analyserNode = audioCtx.createAnalyser();
+    analyserNode.fftSize = 128;
+    sourceNode.connect(analyserNode);
+    analyserNode.connect(audioCtx.destination);
 }
 
 let visualizerRunning = false;
 function startVisualizer() {
     if (visualizerRunning) return;
+    if (!audioCtx) setupVisualizer();
+    initAnalyser();
     visualizerRunning = true;
     const data = new Uint8Array(analyserNode.frequencyBinCount);
     const w = visualizerCanvas.clientWidth;
@@ -525,18 +751,20 @@ function startVisualizer() {
         analyserNode.getByteFrequencyData(data);
         ctx.clearRect(0, 0, w, h);
 
+        const color1 = state.color1;
+        const color2 = state.color2;
         const barW = w / data.length * 2.5;
         const gap = w / data.length * 0.5;
 
         for (let i = 0; i < data.length; i++) {
             const pct = data[i] / 255;
-            const barH = pct * h * 0.9;
+            const barH = Math.max(2, pct * h * 0.9);
             const x = i * (barW + gap) + gap / 2;
             const y = h - barH;
 
             const gradient = ctx.createLinearGradient(x, y, x, h);
-            gradient.addColorStop(0, '#a855f7');
-            gradient.addColorStop(1, '#7c3aed');
+            gradient.addColorStop(0, color2);
+            gradient.addColorStop(1, color1);
             ctx.fillStyle = gradient;
 
             ctx.beginPath();
@@ -554,6 +782,61 @@ function stopVisualizer() {
     ctx.clearRect(0, 0, visualizerCanvas.width, visualizerCanvas.height);
 }
 
+// ── Audio mode ─────────────────────────────────────
+let audioModeSource = null;
+let audioModeGain = null;
+
+function applyAudioMode(mode) {
+    state.audioMode = mode;
+    localStorage.setItem('radio-audio-mode', mode);
+    $('audio-mode').value = mode;
+
+    if (!audioCtx || !sourceNode) return;
+
+    // Disconnect everything
+    if (analyserNode) {
+        try { sourceNode.disconnect(analyserNode); } catch {}
+        try { analyserNode.disconnect(audioCtx.destination); } catch {}
+    }
+
+    if (mode === 'stereo') {
+        sourceNode.connect(audioCtx.destination);
+    } else if (mode === 'mono') {
+        const merger = audioCtx.createChannelMerger(1);
+        const splitter = audioCtx.createChannelSplitter(2);
+        sourceNode.connect(splitter);
+        splitter.connect(merger, 0, 0);
+        splitter.connect(merger, 1, 0);
+        merger.connect(audioCtx.destination);
+    } else if (mode === 'wide') {
+        // Simple stereo widening: create delay on one channel
+        const splitter = audioCtx.createChannelSplitter(2);
+        const merger = audioCtx.createChannelMerger(2);
+        const delay = audioCtx.createDelay(0.02);
+        delay.delayTime.value = 0.015;
+        const gain = audioCtx.createGain();
+        gain.gain.value = 0.6;
+
+        sourceNode.connect(splitter);
+        splitter.connect(merger, 0, 0);
+        splitter.connect(delay, 1);
+        delay.connect(gain);
+        gain.connect(merger, 0, 1);
+        merger.connect(audioCtx.destination);
+    }
+
+    // Reconnect analyser
+    if (analyserNode) {
+        sourceNode.connect(analyserNode);
+        analyserNode.connect(audioCtx.destination);
+    }
+}
+
+$('audio-mode').addEventListener('change', () => {
+    applyAudioMode($('audio-mode').value);
+    toast(`Modo: ${$('audio-mode').options[$('audio-mode').selectedIndex].text}`);
+});
+
 // ── Audio events ───────────────────────────────────
 audio.addEventListener('loadedmetadata', () => {
     totalTimeEl.textContent = formatTime(audio.duration);
@@ -566,16 +849,16 @@ audio.addEventListener('timeupdate', () => {
     currentTimeEl.textContent = formatTime(audio.currentTime);
 });
 
-audio.addEventListener('ended', () => {
-    nextSong();
-});
+audio.addEventListener('ended', () => { nextSong(); });
 
 audio.addEventListener('play', async () => {
     state.isPlaying = true;
     $('play').textContent = '⏸';
     if (!audioCtx) {
-        try { setupVisualizer(); } catch {}
+        setupVisualizer();
+        applyAudioMode(state.audioMode);
     }
+    if (audioCtx && audioCtx.state === 'suspended') await audioCtx.resume();
     if (analyserNode) startVisualizer();
 });
 
@@ -630,14 +913,30 @@ progressBar.addEventListener('click', e => {
     audio.currentTime = pct * audio.duration;
 });
 
-// ── Volume ─────────────────────────────────────────
-volumeBar.addEventListener('click', e => {
-    const rect = volumeBar.getBoundingClientRect();
-    state.volume = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+// ── Volume slider ──────────────────────────────────
+volumeSlider.addEventListener('input', () => {
+    state.volume = volumeSlider.value / 100;
     audio.volume = state.volume;
-    volumeFill.style.width = (state.volume * 100) + '%';
-    $('volume-bar').parentElement.querySelector('.icon').textContent =
-        state.volume === 0 ? '🔇' : state.volume < 0.5 ? '🔉' : '🔊';
+    volPct.textContent = volumeSlider.value + '%';
+    volIcon.textContent = state.volume === 0 ? '🔇' : state.volume < 0.5 ? '🔉' : '🔊';
+});
+
+volIcon.addEventListener('click', () => {
+    if (state.volume > 0) {
+        state._prevVol = state.volume;
+        volumeSlider.value = 0;
+        state.volume = 0;
+        audio.volume = 0;
+        volPct.textContent = '0%';
+        volIcon.textContent = '🔇';
+    } else {
+        const restore = state._prevVol || 0.7;
+        volumeSlider.value = restore * 100;
+        state.volume = restore;
+        audio.volume = restore;
+        volPct.textContent = Math.round(restore * 100) + '%';
+        volIcon.textContent = restore < 0.5 ? '🔉' : '🔊';
+    }
 });
 
 // ── Song list click ────────────────────────────────
@@ -703,7 +1002,7 @@ function pollDownload(taskId) {
     li.className = 'download-task';
     li.id = `dl-${taskId}`;
     li.innerHTML = `
-        <span class="status queued" id="dl-status-${taskId}"></span>
+        <span class="dot queued" id="dl-status-${taskId}"></span>
         <span class="name" id="dl-name-${taskId}">Descargando...</span>
         <div class="bar"><div class="bar-fill" id="dl-bar-${taskId}" style="width:0%"></div></div>
         <span class="pct" id="dl-pct-${taskId}">0%</span>
@@ -722,7 +1021,7 @@ function pollDownload(taskId) {
             const pctEl = document.getElementById(`dl-pct-${taskId}`);
             if (!statusEl) { stopPoll(taskId); return; }
 
-            statusEl.className = `status ${task.status}`;
+            statusEl.className = `dot ${task.status}`;
             const pct = Math.round((task.progress || 0) * 100);
             if (barEl) barEl.style.width = pct + '%';
             if (pctEl) pctEl.textContent = pct + '%';
@@ -755,9 +1054,7 @@ function stopPoll(taskId) {
 
 // ── Init ───────────────────────────────────────────
 loadSongs();
-
-// Set initial volume
-volumeFill.style.width = (state.volume * 100) + '%';
+$('audio-mode').value = state.audioMode;
 </script>
 </body>
 </html>
